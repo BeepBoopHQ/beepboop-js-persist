@@ -26,7 +26,8 @@ function serviceProvider (token, serviceURL) {
       })
     },
     set: function (key, value, cb) {
-      wreck.request('PUT', serviceURL + '/kv/' + key, {payload: {value: value + ''}}, function (err, res) {
+      var payload = JSON.stringify({value: value + ''})
+      wreck.request('PUT', serviceURL + '/kv/' + key, {payload: payload}, function (err, res) {
         if (err) return cb(err)
         if (res.statusCode === 404) return cb(null, '')
         wreck.read(res, {json: true}, function (err, body) {
