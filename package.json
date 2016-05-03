@@ -1,0 +1,27 @@
+{
+  "name": "beepboop-persist",
+  "version": "0.0.0",
+  "description": "A javascript client to the BeepBoop Persist key/value store",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeepBoopHQ/beepboop-js-persist.git"
+  },
+  "keywords": [
+    "beepboop",
+    "keyvalue",
+    "persist"
+  ],
+  "author": "Mike Brevoort <mike.brevoort@robotsandpencils.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BeepBoopHQ/beepboop-js-persist/issues"
+  },
+  "homepage": "https://github.com/BeepBoopHQ/beepboop-js-persist#readme",
+  "dependencies": {
+    "wreck": "^7.2.0"
+  }
+}
