@@ -14,7 +14,7 @@ function serviceProvider (token, serviceURL) {
 
   return {
     get: function (key, cb) {
-      wreck.request('GET', serviceURL + '/kv/' + key, function (err, res) {
+      wreck.request('GET', serviceURL + '/kv/' + key, {}, function (err, res) {
         if (err) return cb(err)
         if (res.statusCode === 404) return cb(null, '')
         wreck.read(res, {json: true}, function (err, body) {
@@ -38,7 +38,7 @@ function serviceProvider (token, serviceURL) {
       })
     },
     del: function (key, cb) {
-      wreck.request('DELETE', serviceURL + '/kv/' + key, function (err, res) {
+      wreck.request('DELETE', serviceURL + '/kv/' + key, {}, function (err, res) {
         if (err) return cb(err)
         if (res.statusCode === 404) return cb(null)
         if (res.statusCode === 200) return cb(null)
@@ -50,7 +50,7 @@ function serviceProvider (token, serviceURL) {
       })
     },
     list: function (cb) {
-      wreck.request('GET', serviceURL + '/kv', function (err, res) {
+      wreck.request('GET', serviceURL + '/kv', {}, function (err, res) {
         if (err) return cb(err)
         if (res.statusCode === 404) return cb(null, [])
         wreck.read(res, {json: true}, function (err, body) {
