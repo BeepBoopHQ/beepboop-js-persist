@@ -28,7 +28,7 @@ describe('Service provider', () => {
     var key = getKey()
 
     var set = nock(config.url)
-      .put('/kv/' + key, JSON.stringify({ value: value }))
+      .put('/persist/kv/' + key, JSON.stringify({ value: value }))
       .reply(200, {
         key: key,
         value: value
@@ -87,21 +87,21 @@ describe('Service provider', () => {
       var preparedValue = config.serialize ? JSON.stringify(value) : value
 
       var set = nock(config.url)
-        .put('/kv/' + key, JSON.stringify({ value: preparedValue }))
+        .put('/persist/kv/' + key, JSON.stringify({ value: preparedValue }))
         .reply(200, {
           key: key,
           value: preparedValue
         })
 
       var get = nock(config.url)
-        .get('/kv/' + key)
+        .get('/persist/kv/' + key)
         .reply(200, {
           key: key,
           value: preparedValue
         })
 
       var del = nock(config.url)
-        .delete('/kv/' + key)
+        .delete('/persist/kv/' + key)
         .reply(200)
 
       service.set(key, value, function (err, v) {
@@ -119,7 +119,7 @@ describe('Service provider', () => {
             assert.isTrue(del.isDone())
 
             var get2 = nock(config.url)
-              .get('/kv/' + key)
+              .get('/persist/kv/' + key)
               .reply(404)
 
             service.get(key, function (err, v) {
@@ -141,7 +141,7 @@ describe('Service provider', () => {
       var key = getKey()
 
       var get = nock(config.url)
-        .get('/kv/' + key)
+        .get('/persist/kv/' + key)
         .reply(404)
 
       provider.get(key, function (err, v) {
@@ -172,7 +172,7 @@ describe('Service provider', () => {
       var keys = [getKey(), getKey()]
 
       var mget = nock(config.url)
-        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
         .reply(200, [null, null])
 
       provider.mget(keys, function (err, values) {
@@ -197,14 +197,14 @@ describe('Service provider', () => {
       var preparedValue = config.serialize ? JSON.stringify(one.value) : one.value
 
       var set = nock(config.url)
-        .put('/kv/' + one.key, JSON.stringify({ value: preparedValue }))
+        .put('/persist/kv/' + one.key, JSON.stringify({ value: preparedValue }))
         .reply(200, {
           key: one.key,
           value: preparedValue
         })
 
       var mget = nock(config.url)
-        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
         .reply(200, [
           {
             key: one.key,
@@ -244,21 +244,21 @@ describe('Service provider', () => {
       var keys = [one.key, two.key]
 
       var set1 = nock(config.url)
-        .put('/kv/' + one.key, JSON.stringify({ value: one.preparedValue }))
+        .put('/persist/kv/' + one.key, JSON.stringify({ value: one.preparedValue }))
         .reply(200, {
           key: one.key,
           value: one.preparedValue
         })
 
       var set2 = nock(config.url)
-        .put('/kv/' + two.key, JSON.stringify({ value: two.preparedValue }))
+        .put('/persist/kv/' + two.key, JSON.stringify({ value: two.preparedValue }))
         .reply(200, {
           key: two.key,
           value: two.preparedValue
         })
 
       var mget = nock(config.url)
-        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
         .reply(200, [
           {
             key: one.key,
