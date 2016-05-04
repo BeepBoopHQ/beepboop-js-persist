@@ -172,7 +172,7 @@ describe('Service provider', () => {
       var keys = [getKey(), getKey()]
 
       var mget = nock(config.url)
-        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/mget', JSON.stringify({ keys: keys }))
         .reply(200, [null, null])
 
       provider.mget(keys, function (err, values) {
@@ -204,7 +204,7 @@ describe('Service provider', () => {
         })
 
       var mget = nock(config.url)
-        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/mget', JSON.stringify({ keys: keys }))
         .reply(200, [
           {
             key: one.key,
@@ -258,7 +258,7 @@ describe('Service provider', () => {
         })
 
       var mget = nock(config.url)
-        .post('/persist/kv/mget', JSON.stringify({ keys: keys }))
+        .post('/persist/mget', JSON.stringify({ keys: keys }))
         .reply(200, [
           {
             key: one.key,
