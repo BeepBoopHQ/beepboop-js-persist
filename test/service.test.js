@@ -30,6 +30,7 @@ describe('Service provider', () => {
     var set = nock(config.url)
       .put('/kv/' + key, JSON.stringify({ value: value }))
       .reply(200, {
+        key: key,
         value: value
       })
 
@@ -55,6 +56,9 @@ describe('Service provider', () => {
     testSetGetDelGet(config, '')
     testSetGetDelGet(config, 'my value')
     testSetGetDelGet(config, { foo: 'bar', beep: ['boop', 'boop', 'boop'] })
+    testMgetAllMisses(config)
+    testMgetHitAndMiss(config)
+    testMgetAllHits(config)
   })
 
   describe('with serialize', function () {
@@ -71,6 +75,9 @@ describe('Service provider', () => {
     testSetGetDelGet(config, '')
     testSetGetDelGet(config, 'my value')
     testSetGetDelGet(config, { foo: 'bar', beep: ['boop', 'boop', 'boop'] })
+    testMgetAllMisses(config)
+    testMgetHitAndMiss(config)
+    testMgetAllHits(config)
   })
 
   function testSetGetDelGet (config, value) {
@@ -82,6 +89,7 @@ describe('Service provider', () => {
       var set = nock(config.url)
         .put('/kv/' + key, JSON.stringify({ value: preparedValue }))
         .reply(200, {
+          key: key,
           value: preparedValue
         })
 
@@ -94,7 +102,7 @@ describe('Service provider', () => {
 
       var del = nock(config.url)
         .delete('/kv/' + key)
-        .reply(200, {})
+        .reply(200)
 
       service.set(key, value, function (err, v) {
         assert.isNull(err)
@@ -154,6 +162,130 @@ describe('Service provider', () => {
         assert.isNotNull(err)
 
         done()
+      })
+    })
+  }
+
+  function testMgetAllMisses (config) {
+    it('should handle an mget w/ misses', function (done) {
+      var provider = ServiceProvider(config)
+      var keys = [getKey(), getKey()]
+
+      var mget = nock(config.url)
+        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .reply(200, [null, null])
+
+      provider.mget(keys, function (err, values) {
+        assert.isNull(err)
+        assert.deepEqual(values, [undefined, undefined])
+        assert.isTrue(mget.isDone())
+
+        done()
+      })
+    })
+  }
+
+  function testMgetHitAndMiss (config) {
+    it('should handle an mget w/ hit and miss', function (done) {
+      var provider = ServiceProvider(config)
+      var one = {
+        key: getKey(),
+        value: 1
+      }
+      var twoKey = getKey()
+      var keys = [one.key, twoKey]
+      var preparedValue = config.serialize ? JSON.stringify(one.value) : one.value
+
+      var set = nock(config.url)
+        .put('/kv/' + one.key, JSON.stringify({ value: preparedValue }))
+        .reply(200, {
+          key: one.key,
+          value: preparedValue
+        })
+
+      var mget = nock(config.url)
+        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .reply(200, [
+          {
+            key: one.key,
+            value: one.value
+          },
+          null
+        ])
+
+      provider.set(one.key, one.value, function (err) {
+        assert.isNull(err)
+        assert.isTrue(set.isDone())
+
+        provider.mget(keys, function (err, values) {
+          assert.isNull(err)
+          assert.deepEqual(values, [one.value, undefined])
+          assert.isTrue(mget.isDone())
+
+          done()
+        })
+      })
+    })
+  }
+
+  function testMgetAllHits (config) {
+    it('should handle an mget w/ all hits', function (done) {
+      var provider = ServiceProvider(config)
+      var one = {
+        key: getKey(),
+        value: 1
+      }
+      one.preparedValue = config.serialize ? JSON.stringify(one.value) : one.value
+      var two = {
+        key: getKey(),
+        value: 2
+      }
+      two.preparedValue = config.serialize ? JSON.stringify(two.value) : two.value
+      var keys = [one.key, two.key]
+
+      var set1 = nock(config.url)
+        .put('/kv/' + one.key, JSON.stringify({ value: one.preparedValue }))
+        .reply(200, {
+          key: one.key,
+          value: one.preparedValue
+        })
+
+      var set2 = nock(config.url)
+        .put('/kv/' + two.key, JSON.stringify({ value: two.preparedValue }))
+        .reply(200, {
+          key: two.key,
+          value: two.preparedValue
+        })
+
+      var mget = nock(config.url)
+        .post('/kv/mget', JSON.stringify({ keys: keys }))
+        .reply(200, [
+          {
+            key: one.key,
+            value: one.value
+          },
+          {
+            key: two.key,
+            value: two.value
+          }
+        ])
+
+      provider.set(one.key, one.value, function (err) {
+        assert.isNull(err)
+        assert.isTrue(set1.isDone())
+
+        provider.set(two.key, two.value, function (err) {
+          assert.isNull(err)
+          assert.isTrue(set2.isDone())
+
+          provider.mget(keys, function (err, values) {
+            assert.isNull(err)
+            assert.deepEqual(values, [one.value, two.value])
+            assert.isTrue(mget.isDone())
+
+            done()
+          })
+        })
       })
     })
   }

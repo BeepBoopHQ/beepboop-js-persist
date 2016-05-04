@@ -3,15 +3,15 @@ var MemoryProvider = require('../lib/memory-provider')
 
 describe('Memory provider', () => {
   it('should initialize', () => {
-    var memory = MemoryProvider()
-    assert(typeof memory === 'object')
+    var provider = MemoryProvider()
+    assert(typeof provider === 'object')
   })
 
   it('should set without a callback', function (done) {
-    var memory = MemoryProvider()
+    var provider = MemoryProvider()
 
     assert.doesNotThrow(function () {
-      memory.set(getKey(), 'value')
+      provider.set(getKey(), 'value')
 
       done()
     })
@@ -27,6 +27,9 @@ describe('Memory provider', () => {
     testSetGetDelGet(config, '')
     testSetGetDelGet(config, 'my value')
     testSetGetDelGet(config, { foo: 'bar', beep: ['boop', 'boop', 'boop'] })
+    testMgetAllMisses(config)
+    testMgetAllHits(config)
+    testMgetHitAndMiss(config)
   })
 
   describe('with serialize', function () {
@@ -41,6 +44,9 @@ describe('Memory provider', () => {
     testSetGetDelGet(config, '')
     testSetGetDelGet(config, 'my value')
     testSetGetDelGet(config, { foo: 'bar', beep: ['boop', 'boop', 'boop'] })
+    testMgetAllMisses(config)
+    testMgetAllHits(config)
+    testMgetHitAndMiss(config)
   })
 
   function testSetGetDelGet (config, value) {
@@ -85,13 +91,78 @@ describe('Memory provider', () => {
 
   function testMiss (config) {
     it('should return undefined for misses', function (done) {
-      var memory = MemoryProvider()
+      var provider = MemoryProvider()
 
-      memory.get(getKey(), function (err, v) {
+      provider.get(getKey(), function (err, v) {
         assert.isNull(err)
         assert.isUndefined(v)
 
         done()
+      })
+    })
+  }
+
+  function testMgetAllMisses (config) {
+    it('should handle an mget w/ misses', function (done) {
+      var provider = MemoryProvider()
+      var keys = [getKey(), getKey()]
+
+      provider.mget(keys, function (err, values) {
+        assert.isNull(err)
+        assert.deepEqual(values, [undefined, undefined])
+
+        done()
+      })
+    })
+  }
+
+  function testMgetAllHits (config) {
+    it('should handle an mget w/ all hits', function (done) {
+      var provider = MemoryProvider()
+      var one = {
+        key: getKey(),
+        value: 1
+      }
+      var two = {
+        key: getKey(),
+        value: 1
+      }
+
+      provider.set(one.key, one.value, function (err) {
+        assert.isNull(err)
+
+        provider.set(two.key, two.value, function (err) {
+          assert.isNull(err)
+
+          provider.mget([one.key, two.key], function (err, values) {
+            assert.isNull(err)
+            assert.deepEqual(values, [one.value, two.value])
+
+            done()
+          })
+        })
+      })
+    })
+  }
+
+  function testMgetHitAndMiss (config) {
+    it('should handle an mget w/ hit and miss', function (done) {
+      var provider = MemoryProvider()
+      var one = {
+        key: getKey(),
+        value: 1
+      }
+      var twoKey = getKey()
+
+      provider.set(one.key, one.value, function (err) {
+        assert.isNull(err)
+
+        provider.mget([one.key, twoKey], function (err, values) {
+          assert.isNull(err)
+          assert.deepEqual(values, [one.value, undefined])
+
+          done()
+        })
       })
     })
   }
