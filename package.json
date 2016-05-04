@@ -4,7 +4,7 @@
   "description": "A javascript client to the BeepBoop Persist key/value store",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && mocha test"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,23 @@
   },
   "homepage": "https://github.com/BeepBoopHQ/beepboop-js-persist#readme",
   "dependencies": {
+    "deap": "^1.0.0",
     "wreck": "^7.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "nock": "^8.0.0",
+    "standard": "^7.0.1"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "after",
+      "beforeEach",
+      "afterEach"
+    ]
   }
 }
