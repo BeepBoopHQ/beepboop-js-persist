@@ -9,5 +9,10 @@ module.exports = function NewKV (options) {
     url: 'http://persist'
   }, options || {})
 
-  return config.token ? serviceProvider(config) : memoryProvider(config)
+  if (!config.token) {
+    console.log('USING PERSIST IN MEMORY PROVIDER')
+    return memoryProvider(config)
+  }
+
+  return serviceProvider(config)
 }
