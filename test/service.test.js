@@ -42,6 +42,196 @@ describe('Service provider', () => {
     })
   })
 
+  describe('list keys', function () {
+    var config = {
+      token: 'TOKEN',
+      url: 'https://persist'
+    }
+
+    it('should handle no keys', function (done) {
+      var provider = ServiceProvider(config)
+
+      var getKeys = nock(config.url)
+        .get('/persist/kv')
+        .reply(200, [])
+
+      provider.list(function (err, keys) {
+        assert.isNull(err)
+        assert.isArray(keys)
+        assert.lengthOf(keys, 0)
+        assert.isTrue(getKeys.isDone())
+
+        done()
+      })
+    })
+
+    it('should return keys after set', function (done) {
+      var provider = ServiceProvider(config)
+      var keys = [getKey(), getKey()]
+      var values = ['beep', 'boop']
+
+      var set1 = nock(config.url)
+        .put('/persist/kv/' + keys[0], JSON.stringify({ value: values[0] }))
+        .reply(200, {
+          key: keys[0],
+          value: values[0]
+        })
+
+      var set2 = nock(config.url)
+        .put('/persist/kv/' + keys[1], JSON.stringify({ value: values[1] }))
+        .reply(200, {
+          key: keys[1],
+          value: values[1]
+        })
+
+      var getKeys = nock(config.url)
+        .get('/persist/kv')
+        .reply(200, keys)
+
+      provider.set(keys[0], values[0], function (err) {
+        assert.isNull(err)
+        assert.isTrue(set1.isDone())
+
+        provider.set(keys[1], values[1], function (err) {
+          assert.isNull(err)
+          assert.isTrue(set2.isDone())
+
+          provider.list(function (err, k) {
+            assert.isNull(err)
+            assert.isArray(k)
+            assert.lengthOf(k, keys.length)
+            assert.isTrue(getKeys.isDone())
+
+            done()
+          })
+        })
+      })
+    })
+
+    it("shouldn't return a key after del", function (done) {
+      var provider = ServiceProvider(config)
+      var key = getKey()
+      var value = 'beep'
+
+      var set = nock(config.url)
+        .put('/persist/kv/' + key, JSON.stringify({ value: value }))
+        .reply(200, {
+          key: key,
+          value: value
+        })
+
+      var getKeys1 = nock(config.url)
+        .get('/persist/kv')
+        .reply(200, [key])
+
+      var del = nock(config.url)
+        .delete('/persist/kv/' + key)
+        .reply(200)
+
+      var getKeys2 = nock(config.url)
+        .get('/persist/kv')
+        .reply(200, [])
+
+      provider.set(key, 'beep', function (err) {
+        assert.isNull(err)
+        assert.isTrue(set.isDone())
+
+        provider.list(function (err, keys) {
+          assert.isNull(err)
+          assert.isArray(keys)
+          assert.lengthOf(keys, 1)
+          assert.isTrue(getKeys1.isDone())
+
+          provider.del(key, function (err) {
+            assert.isNull(err)
+            assert.isTrue(del.isDone())
+
+            provider.list(function (err, keys) {
+              assert.isNull(err)
+              assert.isArray(keys)
+              assert.lengthOf(keys, 0)
+              assert.isTrue(getKeys2.isDone())
+
+              done()
+            })
+          })
+        })
+      })
+    })
+
+    it('should filter keys', function (done) {
+      var provider = ServiceProvider(config)
+      var key1 = 'beep'
+      var key2 = 'boop'
+      var value = 'beepboop'
+      var filter1 = 'be'
+      var filter2 = 'bo'
+      var filter3 = 'b'
+
+      var set1 = nock(config.url)
+        .put('/persist/kv/' + key1, JSON.stringify({ value: value }))
+        .reply(200, {
+          key: key1,
+          value: value
+        })
+
+      var set2 = nock(config.url)
+        .put('/persist/kv/' + key2, JSON.stringify({ value: value }))
+        .reply(200, {
+          key: key2,
+          value: value
+        })
+
+      var getKeys1 = nock(config.url)
+        .get('/persist/kv?before=' + filter1)
+        .reply(200, [key1])
+
+      var getKeys2 = nock(config.url)
+        .get('/persist/kv?before=' + filter2)
+        .reply(200, [key2])
+
+      var getKeys3 = nock(config.url)
+        .get('/persist/kv?before=' + filter3)
+        .reply(200, [key1, key2])
+
+      provider.set(key1, value, function (err) {
+        assert.isNull(err)
+        assert.isTrue(set1.isDone())
+
+        provider.set(key2, value, function (err) {
+          assert.isNull(err)
+          assert.isTrue(set2.isDone())
+
+          provider.list('be', function (err, keys) {
+            assert.isNull(err)
+            assert.isArray(keys)
+            assert.lengthOf(keys, 1)
+            assert.equal(keys[0], key1)
+            assert.isTrue(getKeys1.isDone())
+
+            provider.list('bo', function (err, keys) {
+              assert.isNull(err)
+              assert.isArray(keys)
+              assert.lengthOf(keys, 1)
+              assert.equal(keys[0], key2)
+              assert.isTrue(getKeys2.isDone())
+
+              provider.list('b', function (err, keys) {
+                assert.isNull(err)
+                assert.isArray(keys)
+                assert.lengthOf(keys, 2)
+                assert.deepEqual(keys, [key1, key2])
+                assert.isTrue(getKeys3.isDone())
+
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
   describe('without serialize', function () {
     var config = {
       url: 'https://persist',

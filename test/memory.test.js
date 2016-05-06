@@ -17,6 +17,106 @@ describe('Memory provider', () => {
     })
   })
 
+  describe('list keys', function () {
+    it('should handle no keys', function (done) {
+      var provider = MemoryProvider()
+
+      provider.list(function (err, keys) {
+        assert.isNull(err)
+        assert.isArray(keys)
+        assert.lengthOf(keys, 0)
+
+        done()
+      })
+    })
+
+    it('should return keys after set', function (done) {
+      var provider = MemoryProvider()
+      var keys = [getKey(), getKey()]
+
+      provider.set(keys[0], 'beep', function (err) {
+        assert.isNull(err)
+
+        provider.set(keys[1], 'boop', function (err) {
+          assert.isNull(err)
+
+          provider.list(function (err, k) {
+            assert.isNull(err)
+            assert.isArray(k)
+            assert.lengthOf(k, keys.length)
+
+            done()
+          })
+        })
+      })
+    })
+
+    it("shouldn't return a key after del", function (done) {
+      var provider = MemoryProvider()
+      var key = getKey()
+
+      provider.set(key, 'beep', function (err) {
+        assert.isNull(err)
+
+        provider.list(function (err, keys) {
+          assert.isNull(err)
+          assert.isArray(keys)
+          assert.lengthOf(keys, 1)
+
+          provider.del(key, function (err) {
+            assert.isNull(err)
+
+            provider.list(function (err, keys) {
+              assert.isNull(err)
+              assert.isArray(keys)
+              assert.lengthOf(keys, 0)
+
+              done()
+            })
+          })
+        })
+      })
+    })
+
+    it('should filter keys', function (done) {
+      var provider = MemoryProvider()
+      var key1 = 'beep'
+      var key2 = 'boop'
+      var value = 'beepboop'
+
+      provider.set(key1, value, function (err) {
+        assert.isNull(err)
+
+        provider.set(key2, value, function (err) {
+          assert.isNull(err)
+
+          provider.list('be', function (err, keys) {
+            assert.isNull(err)
+            assert.isArray(keys)
+            assert.lengthOf(keys, 1)
+            assert.equal(keys[0], key1)
+
+            provider.list('bo', function (err, keys) {
+              assert.isNull(err)
+              assert.isArray(keys)
+              assert.lengthOf(keys, 1)
+              assert.equal(keys[0], key2)
+
+              provider.list('b', function (err, keys) {
+                assert.isNull(err)
+                assert.isArray(keys)
+                assert.lengthOf(keys, 2)
+                assert.deepEqual(keys, [key1, key2])
+
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
   describe('without serialize', function () {
     var config = {}
 
