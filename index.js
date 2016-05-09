@@ -3,16 +3,30 @@ var serviceProvider = require('./lib/service-provider')
 var memoryProvider = require('./lib/memory-provider')
 var Logger = require('./lib/logger')
 
+var providers = {
+  'memory': memoryProvider,
+  'beepboop': serviceProvider
+}
+
 module.exports = function NewKV (options) {
   var config = deap.update({
-    debug: false,
-    serialize: true,
-    token: process.env.BEEPBOOP_TOKEN,
-    url: 'http://persist'
+    provider: null, // select provider strategy explicitly ('memory'||'beepboop')
+    debug: false, // enables logging of calls/errors
+    serialize: true, // JSON.stringify/parse on set/get
+    token: process.env.BEEPBOOP_TOKEN, // auth token
+    url: process.env.BEEPBOOP_PERSIST_URL // persist endpoint
   }, options || {})
 
   var logger = config.logger || Logger(config.debug)
-  var provider = !config.token ? memoryProvider(config) : serviceProvider(config)
+  var provider
+
+  // Use provider explicitly set if present and valid
+  if (Object.keys(providers).indexOf(config.provider) !== -1) {
+    provider = providers[config.provider](config)
+  } else {
+    // Select provider based on configuration present
+    provider = (!config.token || !config.url) ? memoryProvider(config) : serviceProvider(config)
+  }
 
   // return a wrapper around provider to normalize args and logging
   return {
