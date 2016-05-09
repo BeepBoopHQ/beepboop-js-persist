@@ -8,6 +8,7 @@ describe('Beep Boop Persist', function () {
     })
 
     assert.equal(persist.type, 'memory')
+    assertInterface(persist)
   })
 
   it('should create a service provider when token is present', function () {
@@ -16,5 +17,14 @@ describe('Beep Boop Persist', function () {
     })
 
     assert.equal(persist.type, 'service')
+    assertInterface(persist)
   })
+
+  function assertInterface (persist) {
+    assert.isFunction(persist.get)
+    assert.isFunction(persist.mget)
+    assert.isFunction(persist.set)
+    assert.isFunction(persist.del)
+    assert.isFunction(persist.list)
+  }
 })

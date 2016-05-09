@@ -1,5 +1,6 @@
 var assert = require('chai').assert
 var nock = require('nock')
+var Persist = require('../index')
 var ServiceProvider = require('../lib/service-provider')
 
 describe('Service provider', () => {
@@ -13,7 +14,7 @@ describe('Service provider', () => {
     assert.doesNotThrow(function () {
       ServiceProvider({
         token: 'TOKEN',
-        url: 'https://persist'
+        url: 'http://persist'
       })
     })
   })
@@ -21,9 +22,10 @@ describe('Service provider', () => {
   it('should set without a callback', function (done) {
     var config = {
       token: 'TOKEN',
-      url: 'https://persist'
+      url: 'http://persist',
+      serialize: false
     }
-    var provider = ServiceProvider(config)
+    var provider = Persist(config)
     var value = 'value'
     var key = getKey()
 
@@ -45,11 +47,12 @@ describe('Service provider', () => {
   describe('list keys', function () {
     var config = {
       token: 'TOKEN',
-      url: 'https://persist'
+      url: 'http://persist',
+      serialize: false
     }
 
     it('should handle no keys', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
 
       var getKeys = nock(config.url)
         .get('/persist/kv')
@@ -66,7 +69,7 @@ describe('Service provider', () => {
     })
 
     it('should return keys after set', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var keys = [getKey(), getKey()]
       var values = ['beep', 'boop']
 
@@ -109,7 +112,7 @@ describe('Service provider', () => {
     })
 
     it("shouldn't return a key after del", function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var key = getKey()
       var value = 'beep'
 
@@ -160,7 +163,7 @@ describe('Service provider', () => {
     })
 
     it('should filter keys', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var key1 = 'beep'
       var key2 = 'boop'
       var value = 'beepboop'
@@ -234,7 +237,7 @@ describe('Service provider', () => {
 
   describe('without serialize', function () {
     var config = {
-      url: 'https://persist',
+      url: 'http://persist',
       token: 'TOKEN',
       serialize: false
     }
@@ -253,7 +256,7 @@ describe('Service provider', () => {
 
   describe('with serialize', function () {
     var config = {
-      url: 'https://persist',
+      url: 'http://persist',
       token: 'TOKEN',
       serialize: true
     }
@@ -272,7 +275,7 @@ describe('Service provider', () => {
 
   function testSetGetDelGet (config, value) {
     it('should handle "' + value + '"', function (done) {
-      var service = ServiceProvider(config)
+      var service = Persist(config)
       var key = getKey()
       var preparedValue = config.serialize ? JSON.stringify(value) : value
 
@@ -327,7 +330,7 @@ describe('Service provider', () => {
 
   function testMiss (config) {
     it('should return undefined for misses', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var key = getKey()
 
       var get = nock(config.url)
@@ -346,7 +349,7 @@ describe('Service provider', () => {
 
   function testSetUndefined (config) {
     it('should not allow setting undefined', function (done) {
-      var service = ServiceProvider(config)
+      var service = Persist(config)
 
       service.set(getKey(), undefined, function (err) {
         assert.isNotNull(err)
@@ -358,7 +361,7 @@ describe('Service provider', () => {
 
   function testMgetAllMisses (config) {
     it('should handle an mget w/ misses', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var keys = [getKey(), getKey()]
 
       var mget = nock(config.url)
@@ -377,7 +380,7 @@ describe('Service provider', () => {
 
   function testMgetHitAndMiss (config) {
     it('should handle an mget w/ hit and miss', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var one = {
         key: getKey(),
         value: 1
@@ -420,7 +423,7 @@ describe('Service provider', () => {
 
   function testMgetAllHits (config) {
     it('should handle an mget w/ all hits', function (done) {
-      var provider = ServiceProvider(config)
+      var provider = Persist(config)
       var one = {
         key: getKey(),
         value: 1

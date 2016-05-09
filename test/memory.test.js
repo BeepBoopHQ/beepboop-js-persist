@@ -1,14 +1,14 @@
 var assert = require('chai').assert
-var MemoryProvider = require('../lib/memory-provider')
+var Persist = require('../index')
 
 describe('Memory provider', () => {
   it('should initialize', () => {
-    var provider = MemoryProvider()
+    var provider = Persist({ token: null })
     assert(typeof provider === 'object')
   })
 
   it('should set without a callback', function (done) {
-    var provider = MemoryProvider()
+    var provider = Persist({ token: null })
 
     assert.doesNotThrow(function () {
       provider.set(getKey(), 'value')
@@ -19,7 +19,7 @@ describe('Memory provider', () => {
 
   describe('list keys', function () {
     it('should handle no keys', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
 
       provider.list(function (err, keys) {
         assert.isNull(err)
@@ -31,7 +31,7 @@ describe('Memory provider', () => {
     })
 
     it('should return keys after set', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var keys = [getKey(), getKey()]
 
       provider.set(keys[0], 'beep', function (err) {
@@ -52,7 +52,7 @@ describe('Memory provider', () => {
     })
 
     it("shouldn't return a key after del", function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var key = getKey()
 
       provider.set(key, 'beep', function (err) {
@@ -79,7 +79,7 @@ describe('Memory provider', () => {
     })
 
     it('should filter keys', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var key1 = 'beep'
       var key2 = 'boop'
       var value = 'beepboop'
@@ -118,7 +118,7 @@ describe('Memory provider', () => {
   })
 
   describe('without serialize', function () {
-    var config = {}
+    var config = { token: null }
 
     testMiss(config)
     testSetUndefined(config)
@@ -134,6 +134,7 @@ describe('Memory provider', () => {
 
   describe('with serialize', function () {
     var config = {
+      token: null,
       serialize: true
     }
 
@@ -151,7 +152,7 @@ describe('Memory provider', () => {
 
   function testSetGetDelGet (config, value) {
     it('should handle "' + value + '"', function (done) {
-      var provider = MemoryProvider(config)
+      var provider = Persist(config)
       var key = getKey()
 
       provider.set(key, value, function (err, v) {
@@ -179,7 +180,7 @@ describe('Memory provider', () => {
 
   function testSetUndefined (config) {
     it('should not allow setting undefined', function (done) {
-      var provider = MemoryProvider(config)
+      var provider = Persist(config)
 
       provider.set(getKey(), undefined, function (err) {
         assert.isNotNull(err)
@@ -191,7 +192,7 @@ describe('Memory provider', () => {
 
   function testMiss (config) {
     it('should return undefined for misses', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
 
       provider.get(getKey(), function (err, v) {
         assert.isNull(err)
@@ -204,7 +205,7 @@ describe('Memory provider', () => {
 
   function testMgetAllMisses (config) {
     it('should handle an mget w/ misses', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var keys = [getKey(), getKey()]
 
       provider.mget(keys, function (err, values) {
@@ -218,7 +219,7 @@ describe('Memory provider', () => {
 
   function testMgetAllHits (config) {
     it('should handle an mget w/ all hits', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var one = {
         key: getKey(),
         value: 1
@@ -247,7 +248,7 @@ describe('Memory provider', () => {
 
   function testMgetHitAndMiss (config) {
     it('should handle an mget w/ hit and miss', function (done) {
-      var provider = MemoryProvider()
+      var provider = Persist({ token: null })
       var one = {
         key: getKey(),
         value: 1
