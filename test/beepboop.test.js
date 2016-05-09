@@ -1,12 +1,12 @@
 var assert = require('chai').assert
 var nock = require('nock')
 var Persist = require('../index')
-var ServiceProvider = require('../lib/service-provider')
+var BeepBoopProvider = require('../lib/beepboop-provider')
 
 describe('Service provider', () => {
   it('should require config', () => {
     assert.throws(function () {
-      ServiceProvider()
+      BeepBoopProvider()
     })
   })
 

@@ -1,11 +1,11 @@
 var deap = require('deap')
-var serviceProvider = require('./lib/service-provider')
+var beepboopProvider = require('./lib/beepboop-provider')
 var memoryProvider = require('./lib/memory-provider')
 var Logger = require('./lib/logger')
 
 var providers = {
   'memory': memoryProvider,
-  'beepboop': serviceProvider
+  'beepboop': beepboopProvider
 }
 
 module.exports = function NewKV (options) {
@@ -25,7 +25,7 @@ module.exports = function NewKV (options) {
     provider = providers[config.provider](config)
   } else {
     // Select provider based on configuration present
-    provider = (!config.token || !config.url) ? memoryProvider(config) : serviceProvider(config)
+    provider = (!config.token || !config.url) ? memoryProvider(config) : beepboopProvider(config)
   }
 
   // return a wrapper around provider to normalize args and logging
