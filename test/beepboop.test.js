@@ -1,26 +1,18 @@
 var assert = require('chai').assert
 var nock = require('nock')
 var Persist = require('../index')
-var ServiceProvider = require('../lib/service-provider')
+var BeepBoopProvider = require('../lib/beepboop-provider')
 
 describe('Service provider', () => {
   it('should require config', () => {
     assert.throws(function () {
-      ServiceProvider()
-    })
-  })
-
-  it('should initialize w/ token and url', () => {
-    assert.doesNotThrow(function () {
-      ServiceProvider({
-        token: 'TOKEN',
-        url: 'http://persist'
-      })
+      BeepBoopProvider()
     })
   })
 
   it('should set without a callback', function (done) {
     var config = {
+      provider: 'beepboop',
       token: 'TOKEN',
       url: 'http://persist',
       serialize: false
@@ -46,6 +38,7 @@ describe('Service provider', () => {
 
   describe('list keys', function () {
     var config = {
+      provider: 'beepboop',
       token: 'TOKEN',
       url: 'http://persist',
       serialize: false
@@ -237,8 +230,9 @@ describe('Service provider', () => {
 
   describe('without serialize', function () {
     var config = {
-      url: 'http://persist',
+      provider: 'beepboop',
       token: 'TOKEN',
+      url: 'http://persist',
       serialize: false
     }
 
@@ -256,8 +250,9 @@ describe('Service provider', () => {
 
   describe('with serialize', function () {
     var config = {
-      url: 'http://persist',
+      provider: 'beepboop',
       token: 'TOKEN',
+      url: 'http://persist',
       serialize: true
     }
 
