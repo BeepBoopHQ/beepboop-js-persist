@@ -17,7 +17,7 @@ kv.set('a key', 'the key, is water', function (err) {
     kv.list(function (err, keys) {
       // handle error :)
       // keys should be ['a key']
-      kv.delete('a key', function (err) {
+      kv.del('a key', function (err) {
         // handle error :)
         // 'a key' should be deleted
       })
