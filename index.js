@@ -10,6 +10,7 @@ var providers = {
 
 module.exports = function NewKV (options) {
   var config = deap.update({
+    logger: null, // override logger
     provider: null, // select provider strategy explicitly ('memory'||'beepboop')
     debug: false, // enables logging of calls/errors
     serialize: true, // JSON.stringify/parse on set/get
