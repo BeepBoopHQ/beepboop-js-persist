@@ -1,21 +1,24 @@
 var deap = require('deap')
 var beepboopProvider = require('./lib/beepboop-provider')
 var memoryProvider = require('./lib/memory-provider')
+var fsProvider = require('./lib/fs-provider')
 var Logger = require('./lib/logger')
 
 var providers = {
   'memory': memoryProvider,
-  'beepboop': beepboopProvider
+  'beepboop': beepboopProvider,
+  'fs': fsProvider
 }
 
 module.exports = function NewKV (options) {
   var config = deap.update({
     logger: null, // override logger
-    provider: null, // select provider strategy explicitly ('memory'||'beepboop')
+    provider: null, // select provider strategy explicitly ('memory'||'beepboop'||'fs')
     debug: false, // enables logging of calls/errors
     serialize: true, // JSON.stringify/parse on set/get
     token: process.env.BEEPBOOP_TOKEN, // auth token
-    url: process.env.BEEPBOOP_PERSIST_URL // persist endpoint
+    url: process.env.BEEPBOOP_PERSIST_URL, // persist endpoint
+    directory: null // only for filesystem provider
   }, options || {})
 
   var logger = config.logger || Logger(config.debug)
