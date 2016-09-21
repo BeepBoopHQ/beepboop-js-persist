@@ -62,6 +62,16 @@ describe('Beep Boop Persist', function () {
     assertInterface(persist)
   })
 
+  it('should allow overriding provider w/ fs', function () {
+    var persist = Persist({
+      provider: 'fs',
+      token: 'TOKEN'
+    })
+
+    assert.equal(persist.type, 'fs')
+    assertInterface(persist)
+  })
+
   function assertInterface (persist) {
     assert.isFunction(persist.get)
     assert.isFunction(persist.mget)

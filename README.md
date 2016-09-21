@@ -34,7 +34,8 @@ Returns a Beep Boop Perist api:
 + `options.url` - defaults to `process.env.BEEPBOOP_PERSIST_URL` - service url passed into environment by Beep Boop
 + `options.debug` - defaults to `false` - if `true` then api calls and errors are logged.
 + `options.logger` - defaults to `null` - Should be an object w/ a `debug` and `error` function.
-+ `options.provider` - defaults to `null`, acceptable values are `"memory"` or `"beepboop"` - this provides a way to override provider selection logic.  If this isn't explicitly set, then the `"beepboop"` provider is used when both `token` and `url` are present.  Otherwise the `"memory"` provider is used.
++ `options.provider` - defaults to `null`, acceptable values are `"memory"`, `"beepboop"`, or `"fs"` - this provides a way to override provider selection logic.  If this isn't explicitly set, then the `"beepboop"` provider is used when both `token` and `url` are present.  Otherwise the `"memory"` provider is used. `"fs"` can be used when running outside of Beep Boop to make data survive restarts. This provider shouldn't be used while running on Beep Boop though since the disks are ephemeral.
++ `options.directory` - defaults to `.persist` under module - Only used with the `fs` filesystem provider (meant testing only) to control where data is stored.
 
 ### .get(key, callback)
 
