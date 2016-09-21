@@ -1,14 +1,15 @@
+'use strict'
 const assert = require('chai').assert
 
 module.exports = (providerFactory) => {
   describe('harness', () => {
     it('should initialize', () => {
-      var provider = providerFactory()
+      let provider = providerFactory()
       assert(typeof provider === 'object')
     })
 
     it('should set without a callback', function (done) {
-      var provider = providerFactory()
+      let provider = providerFactory()
 
       assert.doesNotThrow(function () {
         provider.set(getKey(), 'value')
@@ -18,7 +19,7 @@ module.exports = (providerFactory) => {
 
     describe('list keys', function () {
       it('should handle no keys', function (done) {
-        var provider = providerFactory()
+        let provider = providerFactory()
 
         provider.list(function (err, keys) {
           assert.isNull(err)
@@ -30,8 +31,8 @@ module.exports = (providerFactory) => {
       })
 
       it('should return keys after set', function (done) {
-        var provider = providerFactory()
-        var keys = [getKey(), getKey()]
+        let provider = providerFactory()
+        let keys = [getKey(), getKey()]
 
         provider.set(keys[0], 'beep', function (err) {
           assert.isNull(err)
@@ -51,8 +52,8 @@ module.exports = (providerFactory) => {
       })
 
       it("shouldn't return a key after del", function (done) {
-        var provider = providerFactory()
-        var key = getKey()
+        let provider = providerFactory()
+        let key = getKey()
 
         provider.set(key, 'beep', function (err) {
           assert.isNull(err)
@@ -78,10 +79,10 @@ module.exports = (providerFactory) => {
       })
 
       it('should filter keys', function (done) {
-        var provider = providerFactory()
-        var key1 = 'beep'
-        var key2 = 'boop'
-        var value = 'beepboop'
+        let provider = providerFactory()
+        let key1 = 'beep'
+        let key2 = 'boop'
+        let value = 'beepboop'
 
         provider.set(key1, value, function (err) {
           assert.isNull(err)
@@ -117,7 +118,7 @@ module.exports = (providerFactory) => {
     })
 
     describe('without serialize', function () {
-      var config = { serialize: false }
+      let config = { serialize: false }
 
       testMiss(config)
       testSetUndefined(config)
@@ -132,7 +133,7 @@ module.exports = (providerFactory) => {
     })
 
     describe('with serialize', function () {
-      var config = { serialize: true }
+      let config = { serialize: true }
 
       testMiss(config)
       testSetUndefined(config)
@@ -149,8 +150,8 @@ module.exports = (providerFactory) => {
 
     function testSetGetDelGet (config, value, expected) {
       it('should handle "' + value + '"', function (done) {
-        var provider = providerFactory(config)
-        var key = getKey()
+        let provider = providerFactory(config)
+        let key = getKey()
 
         provider.set(key, value, function (err, v) {
           assert.isNull(err)
@@ -177,7 +178,7 @@ module.exports = (providerFactory) => {
 
     function testSetNotStringNotSerialized (config, value) {
       it('should not allow setting non-string "' + value + '"', function (done) {
-        var provider = providerFactory(config)
+        let provider = providerFactory(config)
 
         provider.set(getKey(), value, function (err) {
           assert.isNotNull(err)
@@ -189,7 +190,7 @@ module.exports = (providerFactory) => {
 
     function testSetUndefined (config) {
       it('should not allow setting undefined', function (done) {
-        var provider = providerFactory(config)
+        let provider = providerFactory(config)
 
         provider.set(getKey(), undefined, function (err) {
           assert.isNotNull(err)
@@ -201,7 +202,7 @@ module.exports = (providerFactory) => {
 
     function testMiss (config) {
       it('should return undefined for misses', function (done) {
-        var provider = providerFactory()
+        let provider = providerFactory()
 
         provider.get(getKey(), function (err, v) {
           assert.isNull(err)
@@ -214,8 +215,8 @@ module.exports = (providerFactory) => {
 
     function testMgetAllMisses (config) {
       it('should handle an mget w/ misses', function (done) {
-        var provider = providerFactory()
-        var keys = [getKey(), getKey()]
+        let provider = providerFactory()
+        let keys = [getKey(), getKey()]
 
         provider.mget(keys, function (err, values) {
           assert.isNull(err)
@@ -228,12 +229,12 @@ module.exports = (providerFactory) => {
 
     function testMgetAllHits (config) {
       it('should handle an mget w/ all hits', function (done) {
-        var provider = providerFactory()
-        var one = {
+        let provider = providerFactory()
+        let one = {
           key: getKey(),
           value: 1
         }
-        var two = {
+        let two = {
           key: getKey(),
           value: 1
         }
@@ -257,12 +258,12 @@ module.exports = (providerFactory) => {
 
     function testMgetHitAndMiss (config) {
       it('should handle an mget w/ hit and miss', function (done) {
-        var provider = providerFactory()
-        var one = {
+        let provider = providerFactory()
+        let one = {
           key: getKey(),
           value: 1
         }
-        var twoKey = getKey()
+        let twoKey = getKey()
 
         provider.set(one.key, one.value, function (err) {
           assert.isNull(err)
@@ -278,7 +279,7 @@ module.exports = (providerFactory) => {
     }
   })
 
-  var idx = 0
+  let idx = 0
   function getKey () {
     return ['testkey', ++idx, Date.now()].join(':')
   }

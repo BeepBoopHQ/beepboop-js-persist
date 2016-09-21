@@ -1,9 +1,10 @@
-var assert = require('chai').assert
-var Persist = require('../index')
+'use strict'
+const assert = require('chai').assert
+const Persist = require('../index')
 
 describe('Beep Boop Persist', function () {
   it('should create a memory provider when token is not present', function () {
-    var persist = Persist({
+    let persist = Persist({
       token: null,
       url: null
     })
@@ -13,7 +14,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should create a beepboop provider when token and url are present', function () {
-    var persist = Persist({
+    let persist = Persist({
       token: 'TOKEN',
       url: 'http://persist'
     })
@@ -23,7 +24,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should allow overriding provider w/ memory', function () {
-    var persist = Persist({
+    let persist = Persist({
       provider: 'memory',
       token: 'TOKEN',
       url: 'http://persist'
@@ -34,7 +35,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should deafult to memory when token is missing', function () {
-    var persist = Persist({
+    let persist = Persist({
       token: null,
       url: 'http://persist'
     })
@@ -44,7 +45,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should deafult to memory when url is missing', function () {
-    var persist = Persist({
+    let persist = Persist({
       token: 'TOKEN',
       url: null
     })
@@ -54,7 +55,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should deafult to memory if an invalid provider is specified', function () {
-    var persist = Persist({
+    let persist = Persist({
       provider: 'invalid'
     })
 
@@ -63,7 +64,7 @@ describe('Beep Boop Persist', function () {
   })
 
   it('should allow overriding provider w/ fs', function () {
-    var persist = Persist({
+    let persist = Persist({
       provider: 'fs',
       token: 'TOKEN'
     })

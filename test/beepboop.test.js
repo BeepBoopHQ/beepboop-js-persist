@@ -35,10 +35,10 @@ let net = require('net')
 let portrange = 45032
 
 function getPort (cb) {
-  var port = portrange
+  let port = portrange
   portrange += 1
 
-  var server = net.createServer()
+  let server = net.createServer()
   server.listen(port, function () {
     server.once('close', function () {
       cb(port)

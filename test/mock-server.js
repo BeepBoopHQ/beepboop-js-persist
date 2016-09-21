@@ -1,6 +1,6 @@
 'use strict'
-let restify = require('restify')
-var Persist = require('../index')
+const restify = require('restify')
+const Persist = require('../index')
 
 module.exports = () => {
   let server = restify.createServer()
