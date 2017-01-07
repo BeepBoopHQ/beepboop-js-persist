@@ -43,7 +43,7 @@ Returns a Beep Boop Perist api:
 
 Set a value for a key. If `value` is not a string it will be `JSON.stringify()`'d if `options.serialize` is `true`
 
-```
+```javascript
 let obj = { foo: 'bar', baz: 1 }
 kv.set('a key', obj, function (err) {
   // check for err
@@ -54,7 +54,7 @@ kv.set('a key', obj, function (err) {
 
 Get a value for a key. If `val` is a string, it will be passed as such, otherwise it is `JSON.parse()`'d if `options.serialize` is `true`
 
-```
+```javascript
 kv.get('a key', function (err, val) {
   // check for err
 })
@@ -64,7 +64,7 @@ kv.get('a key', function (err, val) {
 
 Get multiple values for a key. 
 
-```
+```javascript
 kv.set('key1', 'string value', function (err) {})
 kv.set('key2', { foo: 'bar' }, function (err) {})
 
@@ -81,16 +81,17 @@ kv.mget(keys, function (err, result) {
 
 Delete a value at a key
 
-```
+```javascript
 kv.del('a key', function (err) {
   // check for err
 })
+```
 
 ### .list(begins, callback)
 
 List all keys:
 
-```
+```javascript
 kv.list(function (err, keys) {
   // check for err
 
@@ -99,7 +100,8 @@ kv.list(function (err, keys) {
 ```
 
 List keys that begin with a prefix:
-```
+
+```javascript
 // beings with 'key' for example
 kv.list('key', function (err, keys) {
   // check for err
