@@ -1,3 +1,5 @@
+[![Sponsored by Beep Boop](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F_sponsored_by-%E2%9C%A8_Robots%20%26%20Pencils%20%2F%20Beep%20Boop_%E2%9C%A8-FB6CBE.svg)](https://beepboophq.com)
+
 # [Beep Boop](https://beepboophq.com) Persist Key/Value Store JS Client
 
 This is a node.js client for the [Beep Boop Persist service](https://beepboophq.com/docs/article/api-persist).
