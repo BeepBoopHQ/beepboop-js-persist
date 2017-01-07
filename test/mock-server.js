@@ -71,8 +71,8 @@ module.exports = () => {
 
   server.get('/persist/kv', (req, res) => {
     let ns = req.authorization.credentials
-    let before = req.params.before
-    store(ns).list(before, (err, keys) => {
+    let begins = req.params.begins
+    store(ns).list(begins, (err, keys) => {
       if (err) return res.send(500)
       res.send(keys)
     })

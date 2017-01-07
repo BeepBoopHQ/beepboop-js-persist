@@ -82,13 +82,13 @@ module.exports = function NewKV (options) {
         cb(err, value)
       })
     },
-    list: function (before, cb) {
-      if (typeof before === 'function') {
-        cb = before
-        before = null
+    list: function (begins, cb) {
+      if (typeof begins === 'function') {
+        cb = begins
+        begins = null
       }
 
-      provider.list(before, function (err, value) {
+      provider.list(begins, function (err, value) {
         if (err) {
           logger.error('Error calling list(): %s', err.message)
         } else {
