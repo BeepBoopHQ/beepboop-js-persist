@@ -17,7 +17,7 @@ module.exports = function NewKV (options) {
     debug: false, // enables logging of calls/errors
     serialize: true, // JSON.stringify/parse on set/get
     token: process.env.BEEPBOOP_TOKEN, // auth token
-    url: process.env.BEEPBOOP_PERSIST_URL, // persist endpoint
+    url: process.env.BEEPBOOP_PERSIST_URL || process.env.BEEPBOOP_API_URL || 'https://beepboophq.com/api/v1', // persist endpoint
     directory: null // only for filesystem provider
   }, options || {})
 
